@@ -7,6 +7,9 @@ import java.util.Random;
 
 public abstract class Piece {
 
+
+    // Y COORDINATE / ROW IS int[0]
+    // X COORDINATE / ROW IS int[1]
     public ArrayList<int[]> coordinates;
 
     public Color color;
@@ -48,6 +51,18 @@ public abstract class Piece {
     public void fall() {
         for (int[] i : coordinates) {
             i[0] += 1;
+        }
+    }
+
+    public void moveRight() {
+        for (int[] i : coordinates) {
+            i[1] += 1;
+        }
+    }
+
+    public void moveLeft() {
+        for (int[] i : coordinates) {
+            i[1] -= 1;
         }
     }
 

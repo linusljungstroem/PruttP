@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class TPiece extends Piece{
 
+
     TPiece() {
 
         coordinates = new ArrayList<>();

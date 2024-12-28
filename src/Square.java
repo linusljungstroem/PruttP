@@ -1,6 +1,6 @@
 
 
-
+// Subclass till JButton?
 public class Square {
 
     public Integer[] location;

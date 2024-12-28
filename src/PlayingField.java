@@ -2,7 +2,7 @@ import Pieces.Piece;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class PlayingField {
@@ -13,7 +13,7 @@ public class PlayingField {
     private final Integer y_size = 20;
     public boolean[][] field;
     public boolean[][] deadField;
-    public Piece falling_Piece;
+    public Piece current_Piece;
 
     Scanner scan = new Scanner(System.in);
 
@@ -34,7 +34,9 @@ public class PlayingField {
                 newPiece();
                 System.out.println("NEW PIECE!");
             }
-            scan.nextLine();
+
+            String prutt = scan.nextLine();
+            move(prutt);
             fall();
         }
     }
@@ -50,6 +52,58 @@ public class PlayingField {
                 deadField[i][j] = false;
             }
         }
+    }
+
+    private void move(String righorleft) {
+        Boolean direction;
+        if (Objects.equals(righorleft, "R")) {
+            direction = true;
+        } else if (Objects.equals(righorleft, "L")) {
+            direction = false;
+        } else {return;}
+
+
+        if (checkBounds(direction)) {
+
+            if(direction) {
+                this.erasePiece(current_Piece.coordinates);
+                current_Piece.moveRight();
+                this.updatePiece(current_Piece.getCoordinates());
+            }
+            else {
+                this.erasePiece(current_Piece.coordinates);
+                current_Piece.moveLeft();
+                this.updatePiece(current_Piece.getCoordinates());
+            }
+        }
+    }
+
+    private boolean checkBounds(Boolean direction) {
+
+        boolean possible = true;
+
+        if (direction) {
+            for (int[] i : current_Piece.coordinates){
+                int x = i[1];
+
+                if (x == x_size) {
+                    possible = false;
+                    break;
+                }
+            }
+        }
+        else {
+            for (int[] i : current_Piece.coordinates){
+                int x = i[1];
+
+                if (x == 0) {
+                    possible = false;
+                    break;
+                }
+            }
+        }
+        return possible;
+
     }
 
     @Override
@@ -79,15 +133,15 @@ public class PlayingField {
 
     public void newPiece() {
 
-        falling_Piece = Piece.createPiece();
+        current_Piece = Piece.createPiece();
 
-        ArrayList<int[]> newPiece = falling_Piece.getCoordinates();
+        ArrayList<int[]> newPiece = current_Piece.getCoordinates();
 
         updatePiece(newPiece);
 
     }
 
-    // BARA FÖR ATT STOPPA IN EN NY BIT I SPELPLANEN
+    // I FLYTTAR
     private void updatePiece(ArrayList<int[]> new_coordinates) {
         for (int[] i : new_coordinates) {
             int x = i[1];
@@ -100,9 +154,9 @@ public class PlayingField {
 
     public void fall() {
 
-        this.erasePiece(falling_Piece.coordinates);
-        falling_Piece.fall();
-        this.updatePiece(falling_Piece.getCoordinates());
+        this.erasePiece(current_Piece.coordinates);
+        current_Piece.fall();
+        this.updatePiece(current_Piece.getCoordinates());
 
     }
 
@@ -117,7 +171,7 @@ public class PlayingField {
 
     private boolean check_kill_Piece() {
 
-        ArrayList<int[]> coordinates = falling_Piece.getCoordinates();
+        ArrayList<int[]> coordinates = current_Piece.getCoordinates();
 
 
         for (int[] i : coordinates) {
@@ -146,6 +200,17 @@ public class PlayingField {
             int x = i[1];
             int y = i[0];
             deadField[y][x] = true;
+        }
+
+    }
+
+    public void clearRow() {
+
+        for(boolean[] b : deadField) {
+
+            for (boolean bb : b) {
+
+            }
         }
 
     }
