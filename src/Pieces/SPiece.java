@@ -12,5 +12,7 @@ public class SPiece extends Piece{
         coordinates.add(new int[]{0, 4});
         coordinates.add(new int[]{1, 4});
         coordinates.add(new int[]{1, 3});
+
+        this.pivot = coordinates.get(2);
     }
 }

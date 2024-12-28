@@ -11,6 +11,8 @@ public class LPiece extends Piece{
         coordinates.add(new int[]{1, 4});
         coordinates.add(new int[]{2, 4});
         coordinates.add(new int[]{2, 5});
+
+        this.pivot = coordinates.get(1);
     }
 
 }

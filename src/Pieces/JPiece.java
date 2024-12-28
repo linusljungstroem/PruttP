@@ -11,5 +11,7 @@ public class JPiece extends Piece{
         coordinates.add(new int[]{1, 4});
         coordinates.add(new int[]{2, 4});
         coordinates.add(new int[]{2, 3});
+
+        this.pivot = coordinates.get(1);
     }
 }

@@ -25,22 +25,62 @@ public class PlayingField {
     }
 
     private void manualUpdate() {
+
         newPiece();
+        System.out.println(current_Piece);
 
         while (true) {
-            System.out.println(this);
 
-            if(check_kill_Piece()) {
-                newPiece();
-                System.out.println("NEW PIECE!");
-            }
+            System.out.println("THE NORMAL PRINT\n" + this);
 
             String prutt = scan.nextLine();
+
             move(prutt);
+
+            rotate(prutt);
+
             fall();
+
+            if(check_kill_Piece()) {
+                clearRows();
+                newPiece();
+                System.out.println("NEW PIECE \n" + current_Piece);
+            }
         }
     }
 
+    private void rotate(String rightorleft) {
+
+        if (Objects.equals(rightorleft, "T")) {
+
+            System.out.println("ROTATE RIGHT CALL");
+
+            System.out.println("before rotate \n" + current_Piece);
+
+            this.erasePiece(current_Piece.coordinates);
+            current_Piece.rotateRight(field);
+            this.updatePiece(current_Piece.getCoordinates());
+
+            System.out.println(current_Piece);
+
+        } else if (Objects.equals(rightorleft, "K")) {
+
+            System.out.println("ROTATE LEFT CALL");
+
+            System.out.println("before rotate \n" + current_Piece);
+
+            this.erasePiece(current_Piece.coordinates);
+            current_Piece.rotateLeft(field);
+            this.updatePiece(current_Piece.getCoordinates());
+
+            System.out.println(current_Piece);
+        }
+        else {
+            return;
+        }
+
+
+    }
 
     private void initField() {
 
@@ -65,7 +105,7 @@ public class PlayingField {
 
         if (checkBounds(direction)) {
 
-            if(direction) {
+            if (direction) {
                 this.erasePiece(current_Piece.coordinates);
                 current_Piece.moveRight();
                 this.updatePiece(current_Piece.getCoordinates());
@@ -86,7 +126,7 @@ public class PlayingField {
             for (int[] i : current_Piece.coordinates){
                 int x = i[1];
 
-                if (x == x_size) {
+                if (x == x_size-1) {
                     possible = false;
                     break;
                 }
@@ -106,8 +146,7 @@ public class PlayingField {
 
     }
 
-    @Override
-    public String toString() {
+    public String printDeadField() {
 
         StringBuilder print = new StringBuilder();
 
@@ -117,7 +156,7 @@ public class PlayingField {
             print.append("| ");
 
             for (int j = 0; j < x_size; j++) {
-                if (field[i][j]) {
+                if (deadField[i][j]) {
                     print.append("  X  ");
 
                 } else {
@@ -131,12 +170,39 @@ public class PlayingField {
         return print.toString();
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder print = new StringBuilder();
+
+        for(int i = 0; i < y_size; i++) {
+
+            print.append("| ");
+
+            for (int j = 0; j < x_size; j++) {
+
+                if (field[i][j]) {
+
+                    print.append("  X  ");
+
+                } else {
+
+                    print.append("  O  ");
+
+                }
+            }
+
+            print.append(" |\n");
+
+        }
+        return print.toString();
+    }
+
+
     public void newPiece() {
 
         current_Piece = Piece.createPiece();
-
         ArrayList<int[]> newPiece = current_Piece.getCoordinates();
-
         updatePiece(newPiece);
 
     }
@@ -146,8 +212,6 @@ public class PlayingField {
         for (int[] i : new_coordinates) {
             int x = i[1];
             int y = i[0];
-
-
             field[y][x] = true;
         }
     }
@@ -168,7 +232,7 @@ public class PlayingField {
             field[y][x] = false;
         }
     }
-
+    // RETURNS FALSE TRUE
     private boolean check_kill_Piece() {
 
         ArrayList<int[]> coordinates = current_Piece.getCoordinates();
@@ -183,10 +247,12 @@ public class PlayingField {
 
                 updateDeadField(coordinates);
                 return true;
+
             } else if ( deadField[ y + 1 ][ x ] ) {
 
                 updateDeadField(coordinates);
                 return true;
+
             }
         }
 
@@ -204,14 +270,63 @@ public class PlayingField {
 
     }
 
-    public void clearRow() {
-
-        for(boolean[] b : deadField) {
-
-            for (boolean bb : b) {
-
+    public void updateClearRows() {
+        for(int i = 0; i < y_size; i++) {
+            for (int j = 0; j < x_size; j++) {
+                if(field[i][j]) {
+                    deadField[i][j] = true;
+                }
             }
         }
+    }
+
+    public void clearRows() {
+
+        boolean truerow;
+        ArrayList<Integer> listofrows = new ArrayList<>();
+
+
+        // FOR LOOP CHECKS WHICH ROWS ARE FULLY TRUE -- MEANS THEY SHOULD BE ERASED
+        for(int i = y_size-1; i >= 0; i--) {
+
+            truerow = true;
+
+            for(boolean b : deadField[i]) {
+                if (!b) {
+                    truerow = false;
+                    break;
+                }
+            }
+            if(truerow) {
+                listofrows.add(i);
+            }
+        }
+
+        // CLEARS THE ROWS TO BE CLEARED
+        for(int i : listofrows) {
+
+            for (int j = 0; j < x_size; j++) {
+                field[i][j] = false;
+            }
+        }
+
+        int counter = 0;
+
+        // MOVES REMAINING ROWS DOWNWARDS
+        for (int i : listofrows) {
+
+            for (int rad = i + counter; rad > 0; rad--) {
+                field[rad] = field[rad - 1];
+            }
+            for(int j = 0; j <= x_size; j++) {
+                field[0][j] = false;
+            }
+
+            counter += 1;
+        }
+
+        updateClearRows();
+
 
     }
 

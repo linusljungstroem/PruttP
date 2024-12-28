@@ -10,13 +10,14 @@ public class IPiece extends Piece{
 
         coordinates = new ArrayList<>();
 
+        coordinates.add(new int[]{0, 3});
         coordinates.add(new int[]{0, 4});
-        coordinates.add(new int[]{1, 4});
-        coordinates.add(new int[]{2, 4});
-        coordinates.add(new int[]{3, 4});
+        coordinates.add(new int[]{0, 5});
+        coordinates.add(new int[]{0, 6});
 
+
+        this.pivot = coordinates.get(1);
     }
-
 
 
 }
