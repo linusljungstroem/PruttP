@@ -2,10 +2,10 @@ package Pieces;
 
 import java.util.ArrayList;
 
-public class BPiece extends Piece{
+public class OPiece extends Piece{
 
 
-    protected BPiece() {
+    protected OPiece() {
         coordinates = new ArrayList<>();
 
         coordinates.add(new int[]{0, 4});
@@ -17,7 +17,12 @@ public class BPiece extends Piece{
         this.pivot = coordinates.get(1);
     }
 
+    // O-blocks don't rotate
+    @Override
+    public void rotateRight(boolean[][] playingField) {}
 
+    @Override
+    public void rotateLeft(boolean[][] playingField) {}
 
 
 }

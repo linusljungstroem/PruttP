@@ -17,13 +17,38 @@ public class PlayingField {
 
     Scanner scan = new Scanner(System.in);
 
+
+    // Omgjord för att bara testa rotate
     protected PlayingField() {
 
         initField();
-        manualUpdate();
+        rotTEST("HUGO");
 
     }
 
+    // Samma som manualUpdate fast den bara gjord för att testa Rotate
+    private void rotTEST(String shape) {
+        newPiece(shape);
+        System.out.println(current_Piece);
+
+        while (true) {
+
+
+            fall();
+            fall();
+            fall();
+            while (true) {
+                System.out.println("THE NORMAL PRINT\n" + this);
+
+                String prutt = scan.nextLine();
+
+
+                rotate(prutt);
+            }
+        }
+    }
+
+    // Första testmetoden
     private void manualUpdate() {
 
         newPiece();
@@ -198,13 +223,21 @@ public class PlayingField {
         return print.toString();
     }
 
-
+    // Vanliga konstruktorn
     public void newPiece() {
 
         current_Piece = Piece.createPiece();
         ArrayList<int[]> newPiece = current_Piece.getCoordinates();
         updatePiece(newPiece);
 
+    }
+
+    // Konstsruktor där vi kan välja vilken form biten ska ha
+    public void newPiece(String shape) {
+
+        current_Piece = Piece.createPiece(shape);
+        ArrayList<int[]> newPiece = current_Piece.getCoordinates();
+        updatePiece(newPiece);
     }
 
     // I FLYTTAR

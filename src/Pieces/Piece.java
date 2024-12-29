@@ -4,6 +4,7 @@ package Pieces;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class Piece {
@@ -39,7 +40,7 @@ public abstract class Piece {
             return new SPiece();
         }
         else if(i == 5) {
-            return new BPiece();
+            return new OPiece();
         }
 
         return new IPiece();
@@ -47,61 +48,95 @@ public abstract class Piece {
 
     }
 
+    static public Piece createPiece(String shape) {
+
+        if(Objects.equals(shape, "T")) {
+            return new TPiece();
+        }
+        else if(shape == "J") {
+            return new JPiece();
+        }
+        else if(shape == "L") {
+            return new LPiece();
+        }
+        else if(shape == "Z") {
+            return new ZPiece();
+        }
+        else if(shape == "S") {
+            return new SPiece();
+        }
+        else if(shape == "O") {
+            return new OPiece();
+        }
+
+        return new IPiece();
+    }
+
 
 
     // Rotate the piece 90° clockwise
-    public boolean rotateRight(boolean[][] playingField) {
-        return rotate(playingField, true);
+    public void rotateRight(boolean[][] playingField) {
+        rotate(playingField, true);
     }
 
     // Rotate the piece 90° counterclockwise
-    public boolean rotateLeft(boolean[][] playingField) {
-        return rotate(playingField, false);
+    public void rotateLeft(boolean[][] playingField) {
+        rotate(playingField, false);
     }
 
 
-    // WORKS BAD :)
-    public boolean rotate(boolean[][] playingField, boolean clockwise) {
-        // Create a new list to hold the rotated coordinates
+    // WORKS GREJT :)
+    public void rotate(boolean[][] playingField, boolean clockwise) {
         ArrayList<int[]> newCoordinates = new ArrayList<>();
-
-
 
         System.out.println("Pivot: " + Arrays.toString(pivot));
         System.out.println("Original Coordinates:");
         for (int[] coord : coordinates) {
-            // Calculate the position relative to the pivot
-            int relativeX = coord[0] - pivot[0];
-            int relativeY = coord[1] - pivot[1];
-            System.out.println("Relative: (" + relativeX + ", " + relativeY + ")");
-
-            // Apply rotation formula
-            int rotatedX = clockwise ? relativeY : -relativeY;
-            int rotatedY = clockwise ? -relativeX : relativeX;
-            System.out.println("Rotated: (" + rotatedX + ", " + rotatedY + ")");
-
-            // Translate back to the absolute position
-            int newX = rotatedX + pivot[0];
-            int newY = rotatedY + pivot[1];
-            System.out.println("New Absolute: (" + newX + ", " + newY + ")");
-
-            // Check if the new position is valid (in bounds and not occupied)
-            if (newX < 0 || newX >= playingField.length || newY < 0 || newY >= playingField[0].length
-                    || playingField[newX][newY]) {
-                System.out.println("Rotation failed at: (" + newX + ", " + newY + ")");
-                return false; // Invalid rotation
-            }
-
-            // Add the new coordinate to the rotated list
-            newCoordinates.add(new int[]{newX, newY});
+            System.out.println(Arrays.toString(coord));
         }
 
-        // If all rotations are valid, update the piece's coordinates
-        coordinates.clear();
-        coordinates.addAll(newCoordinates);
+        for (int[] coord : coordinates) {
+            // Step 1: Calculate relative position to the pivot
+            int relativeY = coord[0] - pivot[0]; // Y = coord[0]
+            int relativeX = coord[1] - pivot[1]; // X = coord[1]
 
-        return true;
+            // Step 2: Apply rotation matrix
+            int rotatedY, rotatedX;
+            if (clockwise) {
+                rotatedX = relativeY;     // x' = y
+                rotatedY = -relativeX;    // y' = -x
+            } else {
+                rotatedX = -relativeY;    // x' = -y
+                rotatedY = relativeX;     // y' = x
+            }
+
+            // Step 3: Translate back to absolute position
+            int newY = rotatedY + pivot[0];
+            int newX = rotatedX + pivot[1];
+
+            // Step 4: Validate new position
+            if (newY < 0 || newY >= playingField.length || newX < 0 || newX >= playingField[0].length
+                    || playingField[newY][newX]) {
+                System.out.println("Invalid position: (" + newY + ", " + newX + ")");
+                return; // Abort rotation
+            }
+
+            newCoordinates.add(new int[]{newY, newX});
+        }
+
+        // Step 5: Update coordinates if all checks passed
+        for (int i = 0; i < coordinates.size(); i++) {
+            coordinates.get(i)[0] = newCoordinates.get(i)[0];
+            coordinates.get(i)[1] = newCoordinates.get(i)[1];
+        }
+
+        System.out.println("Updated Coordinates:");
+        for (int[] coord : coordinates) {
+            System.out.println(Arrays.toString(coord));
+        }
+
     }
+
 
 
     public ArrayList<int[]> getCoordinates() {
@@ -112,18 +147,21 @@ public abstract class Piece {
         for (int[] i : coordinates) {
             i[0] += 1;
         }
+        System.out.println("FALL PIVOT: " + Arrays.toString(pivot));
     }
 
     public void moveRight() {
         for (int[] i : coordinates) {
             i[1] += 1;
         }
+        System.out.println("MOVE RIGHT PIVOT: " + Arrays.toString(pivot));
     }
 
     public void moveLeft() {
         for (int[] i : coordinates) {
             i[1] -= 1;
         }
+        System.out.println("MOVE LEFT PIVOT: " + Arrays.toString(pivot));
     }
 
     @Override
@@ -134,6 +172,7 @@ public abstract class Piece {
         for (int[] coordinate : coordinates) {
             for (int j = 0; j < 2; j++) {
                 returnstring.append(coordinate[j]);
+                returnstring.append(" ");
             }
             returnstring.append("\n");
         }
