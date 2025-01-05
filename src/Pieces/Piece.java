@@ -1,6 +1,6 @@
 package Pieces;
 
-
+import kdksd.Square;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +14,12 @@ public abstract class Piece {
     // X COORDINATE / ROW IS int[1]
     public ArrayList<int[]> coordinates;
     public int[] pivot;
+    protected final Color color;
 
+    protected Piece(Color color) { // Never used
+        this.color = color;
+    }
 
-    public Color color;
 
     static public Piece createPiece() {
 
@@ -75,25 +78,19 @@ public abstract class Piece {
 
 
     // Rotate the piece 90° clockwise
-    public void rotateRight(boolean[][] playingField) {
+    public void rotateRight(Square[][] playingField) {
         rotate(playingField, true);
     }
 
     // Rotate the piece 90° counterclockwise
-    public void rotateLeft(boolean[][] playingField) {
+    public void rotateLeft(Square[][] playingField) {
         rotate(playingField, false);
     }
 
 
     // WORKS GREJT :)
-    public void rotate(boolean[][] playingField, boolean clockwise) {
+    public void rotate(Square[][] playingField, boolean clockwise) {
         ArrayList<int[]> newCoordinates = new ArrayList<>();
-
-        System.out.println("Pivot: " + Arrays.toString(pivot));
-        System.out.println("Original Coordinates:");
-        for (int[] coord : coordinates) {
-            System.out.println(Arrays.toString(coord));
-        }
 
         for (int[] coord : coordinates) {
             // Step 1: Calculate relative position to the pivot
@@ -116,9 +113,8 @@ public abstract class Piece {
 
             // Step 4: Validate new position
             if (newY < 0 || newY >= playingField.length || newX < 0 || newX >= playingField[0].length
-                    || playingField[newY][newX]) {
-                System.out.println("Invalid position: (" + newY + ", " + newX + ")");
-                return; // Abort rotation
+                    || playingField[newY][newX].isOccupied()) {
+                return; // Stop rotation
             }
 
             newCoordinates.add(new int[]{newY, newX});
@@ -130,10 +126,6 @@ public abstract class Piece {
             coordinates.get(i)[1] = newCoordinates.get(i)[1];
         }
 
-        System.out.println("Updated Coordinates:");
-        for (int[] coord : coordinates) {
-            System.out.println(Arrays.toString(coord));
-        }
 
     }
 
@@ -147,21 +139,18 @@ public abstract class Piece {
         for (int[] i : coordinates) {
             i[0] += 1;
         }
-        System.out.println("FALL PIVOT: " + Arrays.toString(pivot));
     }
 
     public void moveRight() {
         for (int[] i : coordinates) {
             i[1] += 1;
         }
-        System.out.println("MOVE RIGHT PIVOT: " + Arrays.toString(pivot));
     }
 
     public void moveLeft() {
         for (int[] i : coordinates) {
             i[1] -= 1;
         }
-        System.out.println("MOVE LEFT PIVOT: " + Arrays.toString(pivot));
     }
 
     @Override
@@ -179,7 +168,9 @@ public abstract class Piece {
         return returnstring.toString();
     }
 
-
+    public Color getColor() {
+        return color;
+    }
 
 }
 

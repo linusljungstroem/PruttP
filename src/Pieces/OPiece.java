@@ -1,11 +1,15 @@
 package Pieces;
 
+import kdksd.Square;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class OPiece extends Piece{
+    private static final Color color = Color.yellow;
 
 
     protected OPiece() {
+        super(color);
         coordinates = new ArrayList<>();
 
         coordinates.add(new int[]{0, 4});
@@ -19,10 +23,10 @@ public class OPiece extends Piece{
 
     // O-blocks don't rotate
     @Override
-    public void rotateRight(boolean[][] playingField) {}
+    public void rotateRight(Square[][] playingField) {}
 
     @Override
-    public void rotateLeft(boolean[][] playingField) {}
+    public void rotateLeft(Square[][] playingField) {}
 
 
 }

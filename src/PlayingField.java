@@ -1,6 +1,6 @@
 import Pieces.Piece;
+import kdksd.Square;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
@@ -8,11 +8,10 @@ import java.util.Scanner;
 public class PlayingField {
 
 
-    private JFrame frame;
     private final Integer x_size = 10;
     private final Integer y_size = 20;
-    public boolean[][] field;
-    public boolean[][] deadField;
+    public Square[][] field;
+    public Boolean[][] deadField;
     public Piece current_Piece;
 
     Scanner scan = new Scanner(System.in);
@@ -22,7 +21,12 @@ public class PlayingField {
     protected PlayingField() {
 
         initField();
-        rotTEST("HUGO");
+        graphTest();
+
+    }
+
+    private void graphTest() {
+        newPiece();
 
     }
 
@@ -74,29 +78,22 @@ public class PlayingField {
         }
     }
 
-    private void rotate(String rightorleft) {
+    public void rotate(String rightorleft) {
 
         if (Objects.equals(rightorleft, "T")) {
 
-            System.out.println("ROTATE RIGHT CALL");
 
-            System.out.println("before rotate \n" + current_Piece);
-
-            this.erasePiece(current_Piece.coordinates);
+            this.erasePiece();
             current_Piece.rotateRight(field);
-            this.updatePiece(current_Piece.getCoordinates());
+            this.updatePiece();
 
             System.out.println(current_Piece);
 
         } else if (Objects.equals(rightorleft, "K")) {
 
-            System.out.println("ROTATE LEFT CALL");
-
-            System.out.println("before rotate \n" + current_Piece);
-
-            this.erasePiece(current_Piece.coordinates);
+            this.erasePiece();
             current_Piece.rotateLeft(field);
-            this.updatePiece(current_Piece.getCoordinates());
+            this.updatePiece();
 
             System.out.println(current_Piece);
         }
@@ -109,17 +106,18 @@ public class PlayingField {
 
     private void initField() {
 
-        field = new boolean[y_size][x_size];
-        deadField = new boolean[y_size][x_size];
+        field = new Square[y_size][x_size];
+        deadField = new Boolean[y_size][x_size];
         for(int i = 0; i < y_size; i++) {
             for(int j = 0; j < x_size; j++) {
-                field[i][j] = false;
+                Square sqr = new Square();
+                field[i][j] = sqr;
                 deadField[i][j] = false;
             }
         }
     }
 
-    private void move(String righorleft) {
+    public void move(String righorleft) {
         Boolean direction;
         if (Objects.equals(righorleft, "R")) {
             direction = true;
@@ -131,14 +129,14 @@ public class PlayingField {
         if (checkBounds(direction)) {
 
             if (direction) {
-                this.erasePiece(current_Piece.coordinates);
+                this.erasePiece();
                 current_Piece.moveRight();
-                this.updatePiece(current_Piece.getCoordinates());
+                this.updatePiece();
             }
             else {
-                this.erasePiece(current_Piece.coordinates);
+                this.erasePiece();
                 current_Piece.moveLeft();
-                this.updatePiece(current_Piece.getCoordinates());
+                this.updatePiece();
             }
         }
     }
@@ -150,8 +148,12 @@ public class PlayingField {
         if (direction) {
             for (int[] i : current_Piece.coordinates){
                 int x = i[1];
+                int y = i[0];
 
                 if (x == x_size-1) {
+                    possible = false;
+                    break;
+                } else if (deadField[y][x+1]) {
                     possible = false;
                     break;
                 }
@@ -160,13 +162,19 @@ public class PlayingField {
         else {
             for (int[] i : current_Piece.coordinates){
                 int x = i[1];
+                int y = i[0];
 
                 if (x == 0) {
+                    possible = false;
+                    break;
+                } else if (deadField[y][x-1]) {
                     possible = false;
                     break;
                 }
             }
         }
+
+
         return possible;
 
     }
@@ -206,7 +214,7 @@ public class PlayingField {
 
             for (int j = 0; j < x_size; j++) {
 
-                if (field[i][j]) {
+                if (field[i][j].isOccupied()) {
 
                     print.append("  X  ");
 
@@ -227,8 +235,7 @@ public class PlayingField {
     public void newPiece() {
 
         current_Piece = Piece.createPiece();
-        ArrayList<int[]> newPiece = current_Piece.getCoordinates();
-        updatePiece(newPiece);
+        updatePiece();
 
     }
 
@@ -236,37 +243,38 @@ public class PlayingField {
     public void newPiece(String shape) {
 
         current_Piece = Piece.createPiece(shape);
-        ArrayList<int[]> newPiece = current_Piece.getCoordinates();
-        updatePiece(newPiece);
+        updatePiece();
     }
 
     // I FLYTTAR
-    private void updatePiece(ArrayList<int[]> new_coordinates) {
-        for (int[] i : new_coordinates) {
+    private void updatePiece() {
+        for (int[] i : current_Piece.getCoordinates()) {
             int x = i[1];
             int y = i[0];
-            field[y][x] = true;
+            System.out.println("Updating square at (" + x + ", " + y + ") with color: " + current_Piece.getColor());
+            field[y][x].setOccupied(current_Piece.getColor());
         }
     }
+
 
     public void fall() {
 
-        this.erasePiece(current_Piece.coordinates);
+        this.erasePiece();
         current_Piece.fall();
-        this.updatePiece(current_Piece.getCoordinates());
+        this.updatePiece();
 
     }
 
-    private void erasePiece(ArrayList<int[]> coordinates) {
-        for (int[] i : coordinates) {
+    private void erasePiece() {
+        for (int[] i : current_Piece.getCoordinates()) {
 
             int x = i[1];
             int y = i[0];
-            field[y][x] = false;
+            field[y][x].setUnoccupied();
         }
     }
     // RETURNS FALSE TRUE
-    private boolean check_kill_Piece() {
+    public boolean check_kill_Piece() {
 
         ArrayList<int[]> coordinates = current_Piece.getCoordinates();
 
@@ -306,64 +314,88 @@ public class PlayingField {
     public void updateClearRows() {
         for(int i = 0; i < y_size; i++) {
             for (int j = 0; j < x_size; j++) {
-                if(field[i][j]) {
-                    deadField[i][j] = true;
-                }
+                deadField[i][j] = field[i][j].isOccupied();
             }
         }
     }
 
-    public void clearRows() {
-
-        boolean truerow;
-        ArrayList<Integer> listofrows = new ArrayList<>();
-
-
-        // FOR LOOP CHECKS WHICH ROWS ARE FULLY TRUE -- MEANS THEY SHOULD BE ERASED
-        for(int i = y_size-1; i >= 0; i--) {
-
-            truerow = true;
-
-            for(boolean b : deadField[i]) {
-                if (!b) {
-                    truerow = false;
-                    break;
+    // Shifts all rows one step downwards, while clearing filled rows
+    private void shiftRows(int startRow) {
+        for (int row = startRow; row > 0; row--) {
+            for (int col = 0; col < x_size; col++) {
+                if (field[row - 1][col].isOccupied()) {
+                    field[row][col].setOccupied(field[row - 1][col].getColor());
+                } else {
+                    field[row][col].setUnoccupied();
                 }
             }
-            if(truerow) {
-                listofrows.add(i);
-            }
         }
 
-        // CLEARS THE ROWS TO BE CLEARED
-        for(int i : listofrows) {
+        // Clear the topmost row after shifting
+        for (int col = 0; col < x_size; col++) {
+            field[0][col].setUnoccupied();
+        }
+    }
 
-            for (int j = 0; j < x_size; j++) {
-                field[i][j] = false;
+    public void clearOneRow(int row) {
+        for(int i = 0; i < x_size; i++) {
+            field[row][i].setUnoccupied();
+        }
+    }
+
+    private boolean checkFullRow(int row) {
+
+        for(int i = 0; i < x_size; i++) {
+            if(!field[row][i].isOccupied()) {
+                return false;
             }
         }
+        return true;
+    }
 
-        int counter = 0;
-
-        // MOVES REMAINING ROWS DOWNWARDS
-        for (int i : listofrows) {
-
-            for (int rad = i + counter; rad > 0; rad--) {
-                field[rad] = field[rad - 1];
+    public int clearRows() {
+        int clearedRows = 0;
+        int points = 0;
+        for(int row = y_size-1; row >= 0; row--){
+            if(checkFullRow(row)) {
+                clearOneRow(row);
+                shiftRows(row);
+                clearedRows ++;
+                row++;
             }
-            for(int j = 0; j <= x_size; j++) {
-                field[0][j] = false;
-            }
-
-            counter += 1;
         }
-
         updateClearRows();
 
+        if(clearedRows == 1) {
+            points = 10;
+        } else if (clearedRows == 2) {
+            points = 40;
+        } else if (clearedRows == 3) {
+            points = 90;
+        } else if (clearedRows == 4) {
+            points = 160;
+        }
 
+
+        return points;
+    }
+
+    public Square[][] getField() {
+        return field;
     }
 
 
+    public boolean gameOver() {
+
+        for(int x = 0; x < x_size; x++){
+            if (deadField[0][x]) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 
 }
 
