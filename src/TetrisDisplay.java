@@ -2,8 +2,11 @@ import kdksd.Square;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,10 +16,13 @@ public class TetrisDisplay extends JPanel {
     private Timer timer;
     private JLabel pointsLabel;
     private int points = 0;
+    private int time = 600;
+    private int pointComp = 0;
 
-    public TetrisDisplay(PlayingField playingField) {
+    // needs difficulty
+    public TetrisDisplay() {
 
-        this.field = playingField;
+        this.field = new PlayingField();
 
         setLayout(new BorderLayout());
 
@@ -25,11 +31,19 @@ public class TetrisDisplay extends JPanel {
         pointsLabel.setFont(new Font("Arial", Font.BOLD, 16));
         add(pointsLabel, BorderLayout.SOUTH); // Place label at the top
 
+        int temp = 0;
 
-        timer = new Timer(200, e -> {
-            if(field.check_kill_Piece()) {
+        timer = new Timer(350, e -> {
+
+            if(field.gameOver()){
+                timer.stop();
+                endingGame();
+
+            } else if(field.check_kill_Piece()) {
 
                 points += field.clearRows();
+
+                changeTime();
 
                 pointsLabel.setText("Points: " + points);
 
@@ -61,7 +75,6 @@ public class TetrisDisplay extends JPanel {
             for (int x = 0; x < grid[y].length; x++) {
                 if (grid[y][x].isOccupied()) {
                     g.setColor(grid[y][x].getColor()); // Occupied cell color
-                    System.out.println("Color setting in paintComponent" + grid[y][x].getColor());
                     g.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
                 } else {
                     g.setColor(Color.LIGHT_GRAY); // Grid background
@@ -69,6 +82,8 @@ public class TetrisDisplay extends JPanel {
                 }
             }
         }
+
+        // paint saved block and next block
     }
 
 
@@ -84,7 +99,7 @@ public class TetrisDisplay extends JPanel {
                 case KeyEvent.VK_RIGHT:
                     field.move("R"); // Move the piece right
                     break;
-                case KeyEvent.VK_W:
+                case KeyEvent.VK_UP:
                     field.rotate("K"); // Move the piece down faster
                     break;
                 case KeyEvent.VK_E:
@@ -104,6 +119,52 @@ public class TetrisDisplay extends JPanel {
         }
     }
 
+    // a bit buggy
+    public void changeTime() {
+        System.out.println(time + "TIME");
+
+        if(points-pointComp >= 100) {
+            time = (int) (time / 1.5);
+            pointComp = points-pointComp;
+            timer.setDelay(time);
+        }
+        System.out.println(time + "NEWTIME");
+    }
+
+    private void endingGame() {
+        // Create the options for the dialog
+        Object[] options = {"Restart", "Change difficulty"};
+        
+        // Show the custom dialog
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "Game Over! Your score: " + points,
+                "Game Over",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null, // No custom icon
+                options, // The options for the buttons
+                options[0] // Default button
+        );
+        if (choice == 0) { // Restart button clicked
+            restartGame(); // Restart the game
+        } else if (choice == 1) { // Another Action button clicked
+            // Placeholder for future functionality
+            System.out.println("Another Action chosen!");
+        }
+    }
+
+    private void restartGame() {
+        points = 0; // Reset the score
+        time = 600;
+        pointsLabel.setText("Points: 0"); // Update the points display
+        field.resetField(); // Reset the playing field (implement in your PlayingField class)
+        field.newPiece(); // Spawn a new piece
+        timer.start(); // Restart the timer
+        repaint(); // Refresh the panel
+    }
+
+
 
     public static void main(String[] args) {
             // Create a test frame
@@ -111,34 +172,12 @@ public class TetrisDisplay extends JPanel {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 800);
 
-            PlayingField field1 = new PlayingField();
-
-            // Create your display class instance (replace with your custom class)
-            JPanel displayPanel = new TetrisDisplay(field1); // Replace with your class
+            JPanel displayPanel = new TetrisDisplay(); // Replace with your class
             frame.add(displayPanel);
-
 
             frame.setVisible(true);
 
-            Scanner scanner = new Scanner(System.in);
-
-
-
-            while(true) {
-
-                String rl = scanner.nextLine();
-
-                field1.move(rl);
-                field1.fall();
-
-                displayPanel.repaint();
-
-            }
-
-
     }
-
-
 
 
 }

@@ -87,15 +87,11 @@ public class PlayingField {
             current_Piece.rotateRight(field);
             this.updatePiece();
 
-            System.out.println(current_Piece);
-
         } else if (Objects.equals(rightorleft, "K")) {
 
             this.erasePiece();
             current_Piece.rotateLeft(field);
             this.updatePiece();
-
-            System.out.println(current_Piece);
         }
         else {
             return;
@@ -115,6 +111,10 @@ public class PlayingField {
                 deadField[i][j] = false;
             }
         }
+    }
+
+    public void resetField() {
+        initField();
     }
 
     public void move(String righorleft) {
@@ -251,7 +251,6 @@ public class PlayingField {
         for (int[] i : current_Piece.getCoordinates()) {
             int x = i[1];
             int y = i[0];
-            System.out.println("Updating square at (" + x + ", " + y + ") with color: " + current_Piece.getColor());
             field[y][x].setOccupied(current_Piece.getColor());
         }
     }
@@ -387,13 +386,18 @@ public class PlayingField {
 
     public boolean gameOver() {
 
-        for(int x = 0; x < x_size; x++){
-            if (deadField[0][x]) {
-                return true;
+        for (int row = 0; row < 2; row++) {
+
+            for (int col = 0; col < x_size; col++) {
+
+                if (deadField[row][col]) {
+                    return true;
+                }
             }
         }
-
         return false;
+
+
 
     }
 
