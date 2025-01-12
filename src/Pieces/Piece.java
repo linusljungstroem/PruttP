@@ -16,10 +16,28 @@ public abstract class Piece {
     public int[] pivot;
     protected final Color color;
 
+    protected static ArrayList<int[]> startingCoordinates;
+
+
     protected Piece(Color color) { // Never used
         this.color = color;
     }
 
+    public Piece copy() {
+        // Create a new piece of the same type
+        System.out.println(this.getClass().getSimpleName().replace("Piece", ""));
+        return Piece.createPiece(this.getClass().getSimpleName().replace("Piece", ""));
+    }
+
+
+    public abstract ArrayList<int[]> getPaintCoordinates();
+
+
+    public void resetCoordintas() {
+        for(int i = 0; i < coordinates.size(); i++) {
+            coordinates.set(i,startingCoordinates.get(i).clone());
+        }
+    }
 
     static public Piece createPiece() {
 
@@ -51,28 +69,17 @@ public abstract class Piece {
 
     }
 
-    static public Piece createPiece(String shape) {
-
-        if(Objects.equals(shape, "T")) {
-            return new TPiece();
-        }
-        else if(shape == "J") {
-            return new JPiece();
-        }
-        else if(shape == "L") {
-            return new LPiece();
-        }
-        else if(shape == "Z") {
-            return new ZPiece();
-        }
-        else if(shape == "S") {
-            return new SPiece();
-        }
-        else if(shape == "O") {
-            return new OPiece();
-        }
-
-        return new IPiece();
+    public static Piece createPiece(String type) {
+        return switch (type) {
+            case "I" -> new IPiece();
+            case "O" -> new OPiece();
+            case "T" -> new TPiece();
+            case "S" -> new SPiece();
+            case "Z" -> new ZPiece();
+            case "J" -> new JPiece();
+            case "L" -> new LPiece();
+            default -> throw new IllegalArgumentException("Unknown piece type: " + type);
+        };
     }
 
 

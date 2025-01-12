@@ -1,9 +1,9 @@
-import Pieces.Piece;
-import kdksd.Square;
+package kdksd;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
+import Pieces.IPiece;
+import Pieces.Piece;
+
+import java.util.*;
 
 public class PlayingField {
 
@@ -14,68 +14,27 @@ public class PlayingField {
     public Boolean[][] deadField;
     public Piece current_Piece;
 
-    Scanner scan = new Scanner(System.in);
+    public ArrayList<Piece> piece_queue = new ArrayList<>();
 
+    public ArrayList<Piece> heldPiece = new ArrayList<>();
+
+    public boolean allow_switch = true;
 
     // Omgjord för att bara testa rotate
-    protected PlayingField() {
+    public PlayingField() {
 
         initField();
-        graphTest();
-
-    }
-
-    private void graphTest() {
+        initQueue();
         newPiece();
 
     }
 
-    // Samma som manualUpdate fast den bara gjord för att testa Rotate
-    private void rotTEST(String shape) {
-        newPiece(shape);
-        System.out.println(current_Piece);
-
-        while (true) {
-
-
-            fall();
-            fall();
-            fall();
-            while (true) {
-                System.out.println("THE NORMAL PRINT\n" + this);
-
-                String prutt = scan.nextLine();
-
-
-                rotate(prutt);
-            }
-        }
+    public ArrayList<Piece> getQueue() {
+        return piece_queue;
     }
 
-    // Första testmetoden
-    private void manualUpdate() {
-
-        newPiece();
-        System.out.println(current_Piece);
-
-        while (true) {
-
-            System.out.println("THE NORMAL PRINT\n" + this);
-
-            String prutt = scan.nextLine();
-
-            move(prutt);
-
-            rotate(prutt);
-
-            fall();
-
-            if(check_kill_Piece()) {
-                clearRows();
-                newPiece();
-                System.out.println("NEW PIECE \n" + current_Piece);
-            }
-        }
+    public ArrayList<Piece> getHeldPiece() {
+        return heldPiece;
     }
 
     public void rotate(String rightorleft) {
@@ -179,30 +138,6 @@ public class PlayingField {
 
     }
 
-    public String printDeadField() {
-
-        StringBuilder print = new StringBuilder();
-
-
-        for(int i = 0; i < y_size; i++) {
-
-            print.append("| ");
-
-            for (int j = 0; j < x_size; j++) {
-                if (deadField[i][j]) {
-                    print.append("  X  ");
-
-                } else {
-                    print.append("  O  ");
-                }
-            }
-            print.append(" |\n");
-        }
-
-
-        return print.toString();
-    }
-
     @Override
     public String toString() {
 
@@ -231,12 +166,19 @@ public class PlayingField {
         return print.toString();
     }
 
+
+    public void initQueue() {
+        piece_queue.add(Piece.createPiece());
+        piece_queue.add(Piece.createPiece());
+        piece_queue.add(Piece.createPiece());
+    }
+
+
     // Vanliga konstruktorn
     public void newPiece() {
-
-        current_Piece = Piece.createPiece();
+        current_Piece = piece_queue.removeFirst();
+        piece_queue.add(Piece.createPiece());
         updatePiece();
-
     }
 
     // Konstsruktor där vi kan välja vilken form biten ska ha
@@ -244,6 +186,28 @@ public class PlayingField {
 
         current_Piece = Piece.createPiece(shape);
         updatePiece();
+    }
+
+
+    public void holdPiece() {
+        if (allow_switch) {
+
+            erasePiece(); // Erase the current piece from the field
+            current_Piece.resetCoordintas();
+            if (!heldPiece.isEmpty()) {
+                // Swap the current piece with the held piece
+                Piece tempPiece = heldPiece.removeFirst();
+                heldPiece.add(current_Piece.copy()); // Add a copy of the current piece to the held piece
+                current_Piece = tempPiece.copy(); // Use a copy of the held piece as the current piece
+            } else {
+                // Store the current piece and generate a new one
+                heldPiece.add(current_Piece.copy());
+                newPiece(); // Generate a new piece for current_Piece
+            }
+
+            allow_switch = false; // Disable switching until the piece lands
+            updatePiece(); // Update the field with the new current piece
+        }
     }
 
     // I FLYTTAR
@@ -286,11 +250,13 @@ public class PlayingField {
             if ( y == y_size-1) {
 
                 updateDeadField(coordinates);
+                allow_switch = true;
                 return true;
 
             } else if ( deadField[ y + 1 ][ x ] ) {
 
                 updateDeadField(coordinates);
+                allow_switch = true;
                 return true;
 
             }
