@@ -22,6 +22,9 @@ public class TetrisDisplay extends JPanel {
     }
 
     // Projicera "spökbit"
+    // Ropa metod i field
+    // Metoden ska returnera exakt de koordinater som är under blocket så långt som möjligt
+    //
     private void projectPiece() {
 
     }
@@ -41,10 +44,14 @@ public class TetrisDisplay extends JPanel {
                     g.setColor(grid[y][x].getColor()); // Occupied cell color
                     g.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
                 } else {
+                    g.setColor(Color.BLACK);
+                    g.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
                     g.setColor(Color.LIGHT_GRAY); // Grid background
                     g.drawRect(x * blockSize, y * blockSize, blockSize, blockSize);
                 }
             }
         }
+
+        projectPiece();
     }
 }

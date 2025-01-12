@@ -46,13 +46,7 @@ public class TetrisFrame extends JFrame {
         setFocusable(true);
         requestFocusInWindow();
 
-
         addKeyListener(new TetrisKeyListener());
-
-
-
-
-
 
     }
 
