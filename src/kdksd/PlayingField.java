@@ -1,4 +1,5 @@
 package kdksd;
+import Display.SoundPlayer;
 
 import Pieces.IPiece;
 import Pieces.Piece;
@@ -37,7 +38,22 @@ public class PlayingField {
         return heldPiece;
     }
 
-    public void rotate(String rightorleft) {
+    public boolean rotate_right(){
+
+        this.erasePiece();
+        boolean possible_right = current_Piece.rotateRight(field);
+        this.updatePiece();
+        return possible_right;
+    }
+    public boolean rotate_left(){
+
+        this.erasePiece();
+        boolean possible_left = current_Piece.rotateLeft(field);
+        this.updatePiece();
+        return possible_left;
+    }
+
+    public boolean rotate(String rightorleft) {
 
         if (Objects.equals(rightorleft, "T")) {
 
@@ -45,15 +61,17 @@ public class PlayingField {
             this.erasePiece();
             current_Piece.rotateRight(field);
             this.updatePiece();
+            return true;
 
         } else if (Objects.equals(rightorleft, "K")) {
 
             this.erasePiece();
             current_Piece.rotateLeft(field);
             this.updatePiece();
+            return true;
         }
         else {
-            return;
+            return false;
         }
 
 
@@ -76,29 +94,33 @@ public class PlayingField {
         initField();
     }
 
-    public void move(String righorleft) {
-        Boolean direction;
-        if (Objects.equals(righorleft, "R")) {
-            direction = true;
-        } else if (Objects.equals(righorleft, "L")) {
-            direction = false;
-        } else {return;}
-
-
-        if (checkBounds(direction)) {
-
-            if (direction) {
-                this.erasePiece();
-                current_Piece.moveRight();
-                this.updatePiece();
-            }
-            else {
-                this.erasePiece();
-                current_Piece.moveLeft();
-                this.updatePiece();
-            }
+    //nya moving metoder, kollar om draget är möjligt, isåfall gör vi draget och skickar sedan true till tetrisframe så
+    // att ljudet spelas
+    public boolean movingleft(){
+        if(checkBounds(false)){
+            this.erasePiece();
+            current_Piece.moveLeft();
+            this.updatePiece();
+            return true;
+        }
+        else{
+            return false;
         }
     }
+    public boolean movingright(){
+        if(checkBounds(true)){
+            this.erasePiece();
+            current_Piece.moveRight();
+            this.updatePiece();
+            return true;
+
+        }
+        else{
+            return false;
+        }
+    }
+
+
 
     private boolean checkBounds(Boolean direction) {
 
@@ -286,6 +308,7 @@ public class PlayingField {
 
     // Shifts all rows one step downwards, while clearing filled rows
     private void shiftRows(int startRow) {
+
         for (int row = startRow; row > 0; row--) {
             for (int col = 0; col < x_size; col++) {
                 if (field[row - 1][col].isOccupied()) {
@@ -368,4 +391,3 @@ public class PlayingField {
     }
 
 }
-

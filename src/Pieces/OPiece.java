@@ -43,10 +43,10 @@ public class OPiece extends Piece{
 
     // O-blocks don't rotate
     @Override
-    public void rotateRight(Square[][] playingField) {}
+    public boolean rotateRight(Square[][] playingField) {return false;}
 
     @Override
-    public void rotateLeft(Square[][] playingField) {}
+    public boolean rotateLeft(Square[][] playingField) {return false;}
 
 
 }

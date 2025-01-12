@@ -19,8 +19,6 @@ public class TetrisDisplay extends JPanel {
         this.field = field;
         setLayout(null);
 
-
-
     }
 
     // Projicera "spökbit"

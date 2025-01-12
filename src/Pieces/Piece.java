@@ -85,18 +85,19 @@ public abstract class Piece {
 
 
     // Rotate the piece 90° clockwise
-    public void rotateRight(Square[][] playingField) {
-        rotate(playingField, true);
+    public boolean rotateRight(Square[][] playingField) {
+        return rotate(playingField, true);
     }
 
     // Rotate the piece 90° counterclockwise
-    public void rotateLeft(Square[][] playingField) {
-        rotate(playingField, false);
+    public boolean rotateLeft(Square[][] playingField) {
+        return rotate(playingField, false);
+
     }
 
 
     // WORKS GREJT :)
-    public void rotate(Square[][] playingField, boolean clockwise) {
+    public boolean rotate(Square[][] playingField, boolean clockwise) {
         ArrayList<int[]> newCoordinates = new ArrayList<>();
 
         for (int[] coord : coordinates) {
@@ -121,7 +122,7 @@ public abstract class Piece {
             // Step 4: Validate new position
             if (newY < 0 || newY >= playingField.length || newX < 0 || newX >= playingField[0].length
                     || playingField[newY][newX].isOccupied()) {
-                return; // Stop rotation
+                return false; // Stop rotation
             }
 
             newCoordinates.add(new int[]{newY, newX});
@@ -133,6 +134,7 @@ public abstract class Piece {
             coordinates.get(i)[1] = newCoordinates.get(i)[1];
         }
 
+        return true;
 
     }
 
