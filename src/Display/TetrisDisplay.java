@@ -23,7 +23,7 @@ public class TetrisDisplay extends JPanel {
 
     // Projicera "spökbit"
     // Ropa metod i field
-    // Metoden ska returnera exakt de koordinater som är under blocket så långt som möjligt
+    // Metoden i field ska returnera exakt de koordinater som är under currentPiece så långt som möjligt (jämför med deadField)
     //
     private void projectPiece() {
 
@@ -37,6 +37,7 @@ public class TetrisDisplay extends JPanel {
 
         int blockSize = 30; // Size of each block in pixels
         Square[][] grid = field.getField();
+
 
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {

@@ -21,15 +21,15 @@ public class DificultyDisplay extends JPanel {
         add(qLabel);
 
         JButton easy = new JButton("Easy");
-        easy.addActionListener(e -> startGame("easy"));
+        easy.addActionListener(_ -> startGame("easy"));
         add(easy);
 
         JButton medium = new JButton("Medium");
-        easy.addActionListener(e -> startGame("medium"));
+        medium.addActionListener(_ -> startGame("medium"));
         add(medium);
 
         JButton hard = new JButton("Hard");
-        easy.addActionListener(e -> startGame("hard"));
+        hard.addActionListener(_ -> startGame("hard"));
         add(hard);
 
     }
