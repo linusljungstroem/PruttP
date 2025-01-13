@@ -7,6 +7,7 @@ public class LPiece extends Piece{
 
     private static final Color color = Color.orange;
     private static final ArrayList<int[]> paintCoordinates;
+
     static {
         startingCoordinates = new ArrayList<>();
         startingCoordinates.add(new int[]{0, 4});
@@ -33,7 +34,6 @@ public class LPiece extends Piece{
 
         this.pivot = coordinates.get(1);
     }
-
 
     @Override
     public ArrayList<int[]> getPaintCoordinates() {

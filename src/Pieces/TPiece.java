@@ -4,8 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TPiece extends Piece{
+
     private static final Color color = Color.magenta;
     private static final ArrayList<int[]> paintCoordinates;
+
     static {
         startingCoordinates = new ArrayList<>();
         startingCoordinates.add(new int[]{0, 3});

@@ -1,10 +1,10 @@
-package kdksd;
+package General;
 
 import java.awt.Color;
 
 public class Square {
-    private boolean occupied; // True if the square is occupied
-    private Color color;      // The color of the occupying piece (null if unoccupied)
+    private boolean occupied;
+    private Color color;
 
     public Square() {
         this.occupied = false;
@@ -33,8 +33,5 @@ public class Square {
         this.color = color;
     }
 
-    public void clear() {
-        this.occupied = false;
-        this.color = null;
-    }
+
 }

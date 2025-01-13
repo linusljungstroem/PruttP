@@ -7,6 +7,7 @@ public class JPiece extends Piece{
 
     private static final Color color = Color.pink;
     private static final ArrayList<int[]> paintCoordinates;
+
     static {
         startingCoordinates = new ArrayList<>();
         startingCoordinates.add(new int[]{0, 4});

@@ -4,8 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class ZPiece extends Piece{
+
     private static final Color color = Color.green;
     private static final ArrayList<int[]> paintCoordinates;
+
     static {
         startingCoordinates = new ArrayList<>();
         startingCoordinates.add(new int[]{0, 4});

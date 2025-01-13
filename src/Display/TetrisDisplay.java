@@ -1,58 +1,34 @@
 package Display;
 
-import kdksd.PlayingField;
-import kdksd.Square;
+import General.PlayingField;
+import General.Square;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
-public class TetrisDisplay extends JPanel {
+class TetrisDisplay extends JPanel {
 
     private PlayingField field;
 
-
-    // needs difficulty
-    public TetrisDisplay(PlayingField field) {
+    TetrisDisplay(PlayingField field) {
 
         this.field = field;
-        setLayout(null);
 
     }
-
-    // Projicera "spökbit"
-    // Ropa metod i field
-    // Metoden i field ska returnera exakt de koordinater som är under currentPiece så långt som möjligt (jämför med deadField)
-    //
-    private void projectPiece() {
-
-    }
-
-
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int blockSize = 30; // Size of each block in pixels
         Square[][] grid = field.getField();
 
+        // Use the utility to draw the grid
+        GridMaker.drawGrid(g, grid);
 
-        for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[y].length; x++) {
-                if (grid[y][x].isOccupied()) {
-                    g.setColor(grid[y][x].getColor()); // Occupied cell color
-                    g.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
-                } else {
-                    g.setColor(Color.BLACK);
-                    g.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
-                    g.setColor(Color.LIGHT_GRAY); // Grid background
-                    g.drawRect(x * blockSize, y * blockSize, blockSize, blockSize);
-                }
-            }
-        }
-
-        projectPiece();
+        // Draw the ghost piece
+        ArrayList<int[]> ghostCoordinates = field.ghost_coordinates();
+        GridMaker.drawGhost(g, ghostCoordinates);
     }
+
 }

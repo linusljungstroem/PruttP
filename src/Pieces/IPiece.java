@@ -4,8 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class IPiece extends Piece{
+
     private static final Color color = Color.cyan;
     private static final ArrayList<int[]> paintCoordinates;
+
     static {
         startingCoordinates = new ArrayList<>();
         startingCoordinates.add(new int[]{0, 3});
@@ -32,21 +34,6 @@ public class IPiece extends Piece{
 
 
         this.pivot = coordinates.get(1);
-    }
-
-    public IPiece(boolean bool) {
-
-        super(color);
-        coordinates = new ArrayList<>();
-
-        coordinates.add(new int[]{0, 3});
-        coordinates.add(new int[]{0, 4});
-        coordinates.add(new int[]{0, 5});
-        coordinates.add(new int[]{0, 6});
-
-
-        this.pivot = coordinates.get(1);
-
     }
 
 

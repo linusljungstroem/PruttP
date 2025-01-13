@@ -12,7 +12,7 @@ public class SoundPlayer {
     static final String filepath_move = "src/wav/move.wav";
     static final String filepath_rotate = "src/wav/rotate.wav";
 
-    public SoundPlayer(String filepath) {
+    SoundPlayer(String filepath) {
         try {
             File file = new File(filepath);
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
@@ -22,27 +22,27 @@ public class SoundPlayer {
             System.err.println("Error: " + e.getMessage());
         }
     }
-    public static void move(){
+    static void move(){
         SoundPlayer moving = new SoundPlayer(filepath_move);
         moving.clip.start();
 
     }
-    public static void music(){
+    static void music(){
         SoundPlayer background_music = new SoundPlayer(filepath_music);
         background_music.loop();
     }
-    public static void rotate(){
-        SoundPlayer rotating = new SoundPlayer(filepath_rotate);
+    static void rotate(){
+        SoundPlayer rotating = new SoundPlayer(filepath_move); // Rotate ljudet är lite jobbigt att lyssna på
         rotating.clip.start();
     }
 
-    public static void clear(){
+    static void clear(){
         SoundPlayer clearing = new SoundPlayer(filepath_clear);
         clearing.clip.start();
 
     }
 
-    public void loop() {
+    void loop() {
         if (clip != null) {
             clip.loop(Clip.LOOP_CONTINUOUSLY);
         }

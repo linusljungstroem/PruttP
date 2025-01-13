@@ -1,17 +1,17 @@
 package Display;
 
-import kdksd.PlayingField;
+import General.PlayingField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class TetrisFrame extends JFrame {
 
+    // För tetrislåten
     private static SoundPlayer backgroundMusic;
 
     private TetrisDisplay display;
@@ -22,11 +22,12 @@ public class TetrisFrame extends JFrame {
     private PlayingField field;
 
 
-    private int quickFall;
-
+    private int quickFall = 100;
     private int points = 0;
     private int time;
     private int pointComp = 0;
+
+    private int pointMod;
 
 
     private Timer timer;
@@ -38,15 +39,12 @@ public class TetrisFrame extends JFrame {
         setSize(1000,1000);
         setLayout(new BorderLayout());
 
-        DificultyDisplay dificulty = new DificultyDisplay(this);
-        add(dificulty, BorderLayout.CENTER);
-
         setVisible(true);
-
         setFocusable(true);
         requestFocusInWindow();
 
         addKeyListener(new TetrisKeyListener());
+        showDifficulties();
 
     }
 
@@ -57,19 +55,12 @@ public class TetrisFrame extends JFrame {
         }
     }
 
-    private void restartGame() {
-        points = 0; // Reset the score
-        time = 600;
-        pointsLabel.setText("Points: 0"); // Update the points display
-        field.resetField(); // Reset the playing field (implement in your kdksd.PlayingField class)
-        field.newPiece(); // Spawn a new piece
-        timer.start(); // Restart the timer
-        repaint(); // Refresh the panel
-    }
-
 
     private void endingGame() {
-        String filename = "leaderboard.txt";
+
+        getContentPane().removeAll();
+
+        String filename = "src/wav/leaderboard.txt";
         try (FileWriter writer = new FileWriter(filename, true)) {
             writer.write(points+System.lineSeparator());
 
@@ -77,60 +68,48 @@ public class TetrisFrame extends JFrame {
             System.err.println("error" + e.getMessage());
         }
 
-        // Create the options for the dialog
-        Object[] options = {"Restart", "Change difficulty", "Show leaderboard"};
+        add(new GameOverDisplay(this));
 
-        // Show the custom dialog
-        int choice = JOptionPane.showOptionDialog(
-                this,
-                "Game Over! Your score: " + points,
-                "Game Over",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null, // No custom icon
-                options, // The options for the buttons
-                options[0] // Default button
-        );
-        if (choice == 0) { // Restart button clicked
-            restartGame(); // Restart the game
-        } else if (choice == 1) { // Another Action button clicked
-            // Placeholder for future functionality
-            System.out.println("Another Action chosen!");
-        }
-        else if (choice == 2){
-            LeaderDisplay.showleaderboard(filename);
-        }
+        repaint();
     }
 
+    void showLeaderBoard() {
+
+        getContentPane().removeAll();
+        add(new LeaderDisplay(this));
+        revalidate();
+        repaint();
+    }
 
     void startGame(String difficulty) {
 
         if (timer != null) {
-            timer.stop(); // Stop any existing timer
+            timer.stop();
             timer = null;
         }
 
         switch (difficulty) {
             case "hard" -> {
                 time = 400;
-                quickFall = 200;
+                pointMod = 4;
             }
             case "medium" -> {
                 time = 600;
-                quickFall = 300;
+                pointMod = 2;
             }
             case "easy" -> {
                 time = 800;
-                quickFall = 400;
+                pointMod = 1;
             }
         }
 
-        getContentPane().removeAll();
+        points = 0;
 
+        getContentPane().removeAll();
 
         field = new PlayingField();
 
-        pointsLabel = new JLabel("Points: 0", SwingConstants.CENTER);
+        pointsLabel = new JLabel("Points: " + points, SwingConstants.CENTER);
         pointsLabel.setFont(new Font("Arial", Font.BOLD, 16));
         add(pointsLabel, BorderLayout.NORTH);
 
@@ -152,12 +131,12 @@ public class TetrisFrame extends JFrame {
 
         add(pieceQueueContainer,BorderLayout.EAST);
 
+        revalidate();
 
         timer = new Timer(time, _ -> {
 
             if(field.gameOver()){
                 timer.stop();
-
                 endingGame();
 
             } else if(field.check_kill_Piece()) {
@@ -165,7 +144,7 @@ public class TetrisFrame extends JFrame {
 
                 int newpoints = field.clearRows();
                 if(newpoints > 0){
-                    points += newpoints;
+                    points += newpoints * pointMod;
                     SoundPlayer.clear();
 
                 }
@@ -184,27 +163,30 @@ public class TetrisFrame extends JFrame {
         });
         repaint();
         timer.start();
-
-
-
-
     }
 
-
-
-
-
-
-    // a bit buggy
-    public void changeTime() {
+    private void changeTime() {
 
         if(points-pointComp >= 100) {
             time = (int) (time / 1.5);
             pointComp += 100;
             timer.setDelay(time);
+            if(time <= 100) {
+                quickFall = (int) (time*0.8);
+            }
         }
-        quickFall = (int)(time/2);
+    }
 
+    void showDifficulties() {
+        getContentPane().removeAll();
+        DifficultyDisplay difficulty = new DifficultyDisplay(this);
+        add(difficulty, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    void quitGame() {
+        dispose();
     }
 
 
@@ -223,7 +205,7 @@ public class TetrisFrame extends JFrame {
                     field.holdPiece();
                     savedPiece.updatePiece(field.getHeldPiece().getFirst());
                     break;
-                case KeyEvent.VK_LEFT: //ändrat så att att vi kallar på en specifik move metod, som returnerar om draget gick igenom
+                case KeyEvent.VK_LEFT:
                     boolean possible_left = field.movingleft();
                     if (possible_left){
                         SoundPlayer.move();
@@ -235,14 +217,14 @@ public class TetrisFrame extends JFrame {
                         SoundPlayer.move();
                     }
                     break;
-                case KeyEvent.VK_UP: //ändrat så att rotate skickar tillbaka true om den lyckas, isåfall spelas ljud
+                case KeyEvent.VK_UP:
                     boolean poss_rot = field.rotate_left();
                     if(poss_rot){
                         SoundPlayer.rotate();
                     }
                     break;
                 case KeyEvent.VK_E:
-                    boolean poss_rot_c = field.rotate_right(); // Rotate the piece clockwise
+                    boolean poss_rot_c = field.rotate_right();
                     if(poss_rot_c){
                         SoundPlayer.rotate();
                     }
@@ -253,11 +235,9 @@ public class TetrisFrame extends JFrame {
                     }
                     break;
                 default:
-                    // Handle other keys if necessary
                     break;
             }
-
-            repaint(); // Repaint after every key press
+            repaint();
         }
 
         @Override
@@ -272,8 +252,8 @@ public class TetrisFrame extends JFrame {
 
     public static void main(String[] args) {
 
+        // För tetrislåten
+        //SoundPlayer.music();
         new TetrisFrame();
-
     }
-
 }

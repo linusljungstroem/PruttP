@@ -1,7 +1,5 @@
-package kdksd;
-import Display.SoundPlayer;
+package General;
 
-import Pieces.IPiece;
 import Pieces.Piece;
 
 import java.util.*;
@@ -11,17 +9,16 @@ public class PlayingField {
 
     private final Integer x_size = 10;
     private final Integer y_size = 20;
-    public Square[][] field;
-    public Boolean[][] deadField;
-    public Piece current_Piece;
+    private Square[][] field;
+    private Boolean[][] deadField;
+    private Piece current_Piece;
 
-    public ArrayList<Piece> piece_queue = new ArrayList<>();
+    private ArrayList<Piece> piece_queue = new ArrayList<>();
 
-    public ArrayList<Piece> heldPiece = new ArrayList<>();
+    private ArrayList<Piece> heldPiece = new ArrayList<>();
 
-    public boolean allow_switch = true;
+    private boolean allow_switch = true;
 
-    // Omgjord för att bara testa rotate
     public PlayingField() {
 
         initField();
@@ -40,6 +37,7 @@ public class PlayingField {
 
     public boolean rotate_right(){
 
+
         this.erasePiece();
         boolean possible_right = current_Piece.rotateRight(field);
         this.updatePiece();
@@ -53,28 +51,34 @@ public class PlayingField {
         return possible_left;
     }
 
-    public boolean rotate(String rightorleft) {
 
-        if (Objects.equals(rightorleft, "T")) {
-
-
-            this.erasePiece();
-            current_Piece.rotateRight(field);
-            this.updatePiece();
-            return true;
-
-        } else if (Objects.equals(rightorleft, "K")) {
-
-            this.erasePiece();
-            current_Piece.rotateLeft(field);
-            this.updatePiece();
-            return true;
-        }
-        else {
-            return false;
+    public ArrayList<int[]> ghost_coordinates() {
+        ArrayList<int[]> ghostCoords = new ArrayList<>();
+        for (int[] coord : current_Piece.getCoordinates()) {
+            ghostCoords.add(new int[]{coord[0], coord[1]});
         }
 
+        boolean check = true;
 
+        while (check) {
+            for (int[] i : ghostCoords) {
+                int y = i[0];
+                int x = i[1];
+                if (y == y_size - 1) {
+                    check = false;
+                } else if (deadField[y + 1][x]) {
+                    check = false;
+                }
+            }
+            if (!check) {
+                return ghostCoords;
+            } else {
+                for (int[] i : ghostCoords) {
+                    i[0] += 1;
+                }
+            }
+        }
+        return ghostCoords;
     }
 
     private void initField() {
@@ -90,12 +94,7 @@ public class PlayingField {
         }
     }
 
-    public void resetField() {
-        initField();
-    }
 
-    //nya moving metoder, kollar om draget är möjligt, isåfall gör vi draget och skickar sedan true till tetrisframe så
-    // att ljudet spelas
     public boolean movingleft(){
         if(checkBounds(false)){
             this.erasePiece();
@@ -107,6 +106,7 @@ public class PlayingField {
             return false;
         }
     }
+
     public boolean movingright(){
         if(checkBounds(true)){
             this.erasePiece();
@@ -120,14 +120,12 @@ public class PlayingField {
         }
     }
 
-
-
     private boolean checkBounds(Boolean direction) {
 
         boolean possible = true;
 
         if (direction) {
-            for (int[] i : current_Piece.coordinates){
+            for (int[] i : current_Piece.getCoordinates()){
                 int x = i[1];
                 int y = i[0];
 
@@ -141,7 +139,7 @@ public class PlayingField {
             }
         }
         else {
-            for (int[] i : current_Piece.coordinates){
+            for (int[] i : current_Piece.getCoordinates()){
                 int x = i[1];
                 int y = i[0];
 
@@ -160,6 +158,8 @@ public class PlayingField {
 
     }
 
+
+    // Terminaltestning
     @Override
     public String toString() {
 
@@ -189,7 +189,7 @@ public class PlayingField {
     }
 
 
-    public void initQueue() {
+    private void initQueue() {
         piece_queue.add(Piece.createPiece());
         piece_queue.add(Piece.createPiece());
         piece_queue.add(Piece.createPiece());
@@ -203,36 +203,27 @@ public class PlayingField {
         updatePiece();
     }
 
-    // Konstsruktor där vi kan välja vilken form biten ska ha
-    public void newPiece(String shape) {
-
-        current_Piece = Piece.createPiece(shape);
-        updatePiece();
-    }
-
-
     public void holdPiece() {
+
         if (allow_switch) {
 
-            erasePiece(); // Erase the current piece from the field
+            erasePiece();
             current_Piece.resetCoordintas();
-            if (!heldPiece.isEmpty()) {
-                // Swap the current piece with the held piece
-                Piece tempPiece = heldPiece.removeFirst();
-                heldPiece.add(current_Piece.copy()); // Add a copy of the current piece to the held piece
-                current_Piece = tempPiece.copy(); // Use a copy of the held piece as the current piece
-            } else {
-                // Store the current piece and generate a new one
-                heldPiece.add(current_Piece.copy());
-                newPiece(); // Generate a new piece for current_Piece
-            }
 
-            allow_switch = false; // Disable switching until the piece lands
-            updatePiece(); // Update the field with the new current piece
+            if (!heldPiece.isEmpty()) {
+                Piece tempPiece = heldPiece.removeFirst();
+                heldPiece.add(current_Piece.copy());
+                current_Piece = tempPiece.copy();
+            } else {
+                heldPiece.add(current_Piece.copy());
+                newPiece();
+            }
+            allow_switch = false;
+            updatePiece();
         }
     }
 
-    // I FLYTTAR
+
     private void updatePiece() {
         for (int[] i : current_Piece.getCoordinates()) {
             int x = i[1];
@@ -258,7 +249,8 @@ public class PlayingField {
             field[y][x].setUnoccupied();
         }
     }
-    // RETURNS FALSE TRUE
+
+
     public boolean check_kill_Piece() {
 
         ArrayList<int[]> coordinates = current_Piece.getCoordinates();
@@ -287,7 +279,7 @@ public class PlayingField {
         return false;
     }
 
-    public void updateDeadField(ArrayList<int[]> coordinates) {
+    private void updateDeadField(ArrayList<int[]> coordinates) {
 
         for(int[] i : coordinates) {
 
@@ -298,7 +290,7 @@ public class PlayingField {
 
     }
 
-    public void updateClearRows() {
+    private void updateClearRows() {
         for(int i = 0; i < y_size; i++) {
             for (int j = 0; j < x_size; j++) {
                 deadField[i][j] = field[i][j].isOccupied();
@@ -325,7 +317,7 @@ public class PlayingField {
         }
     }
 
-    public void clearOneRow(int row) {
+    private void clearOneRow(int row) {
         for(int i = 0; i < x_size; i++) {
             field[row][i].setUnoccupied();
         }
