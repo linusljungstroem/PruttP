@@ -208,7 +208,7 @@ public class PlayingField {
         if (allow_switch) {
 
             erasePiece();
-            current_Piece.resetCoordintas();
+
 
             if (!heldPiece.isEmpty()) {
                 Piece tempPiece = heldPiece.removeFirst();
@@ -298,7 +298,6 @@ public class PlayingField {
         }
     }
 
-    // Shifts all rows one step downwards, while clearing filled rows
     private void shiftRows(int startRow) {
 
         for (int row = startRow; row > 0; row--) {
@@ -311,7 +310,6 @@ public class PlayingField {
             }
         }
 
-        // Clear the topmost row after shifting
         for (int col = 0; col < x_size; col++) {
             field[0][col].setUnoccupied();
         }

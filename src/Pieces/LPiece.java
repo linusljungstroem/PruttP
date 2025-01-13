@@ -9,11 +9,6 @@ public class LPiece extends Piece{
     private static final ArrayList<int[]> paintCoordinates;
 
     static {
-        startingCoordinates = new ArrayList<>();
-        startingCoordinates.add(new int[]{0, 4});
-        startingCoordinates.add(new int[]{1, 4});
-        startingCoordinates.add(new int[]{2, 4});
-        startingCoordinates.add(new int[]{2, 5});
 
         paintCoordinates = new ArrayList<>();
         paintCoordinates.add(new int[]{0, 1});
@@ -23,7 +18,7 @@ public class LPiece extends Piece{
 
     }
 
-    protected LPiece() {
+    LPiece() {
         super(color);
         coordinates = new ArrayList<>();
 

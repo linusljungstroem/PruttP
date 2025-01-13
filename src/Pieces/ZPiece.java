@@ -9,11 +9,6 @@ public class ZPiece extends Piece{
     private static final ArrayList<int[]> paintCoordinates;
 
     static {
-        startingCoordinates = new ArrayList<>();
-        startingCoordinates.add(new int[]{0, 4});
-        startingCoordinates.add(new int[]{1, 5});
-        startingCoordinates.add(new int[]{0, 5});
-        startingCoordinates.add(new int[]{1, 6});
 
         paintCoordinates = new ArrayList<>();
         paintCoordinates.add(new int[]{1, 0});
@@ -23,7 +18,7 @@ public class ZPiece extends Piece{
 
     }
 
-    protected ZPiece() {
+    ZPiece() {
         super(color);
         coordinates = new ArrayList<>();
 

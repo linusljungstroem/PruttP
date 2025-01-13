@@ -9,11 +9,6 @@ public class OPiece extends Piece{
     private static final ArrayList<int[]> paintCoordinates;
 
     static {
-        startingCoordinates = new ArrayList<>();
-        startingCoordinates.add(new int[]{0, 4});
-        startingCoordinates.add(new int[]{0, 5});
-        startingCoordinates.add(new int[]{1, 4});
-        startingCoordinates.add(new int[]{1, 5});
 
         paintCoordinates = new ArrayList<>();
         paintCoordinates.add(new int[]{1, 1});
@@ -41,7 +36,6 @@ public class OPiece extends Piece{
         return paintCoordinates;
     }
 
-    // O-blocks don't rotate
     @Override
     public boolean rotateRight(Square[][] playingField) {return false;}
 

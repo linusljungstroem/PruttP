@@ -14,8 +14,6 @@ public abstract class Piece {
     int[] pivot;
     final Color color;
 
-    protected static ArrayList<int[]> startingCoordinates;
-
     protected Piece(Color color) { // Never used
         this.color = color;
     }
@@ -28,11 +26,6 @@ public abstract class Piece {
 
     public abstract ArrayList<int[]> getPaintCoordinates();
 
-    public void resetCoordintas() {
-        for(int i = 0; i < coordinates.size(); i++) {
-            coordinates.set(i,startingCoordinates.get(i).clone());
-        }
-    }
 
     public static Piece createPiece() {
 
